@@ -169,7 +169,7 @@ process_request(?SUBSCRIBE,
                                ensure_queue(SupportedQos, PState),
                            Binding = #'queue.bind'{
                                        queue       = Queue,
-                                       exchange    = Exchange,
+                                       exchange    = list_to_binary(TopicName),
                                        routing_key = rabbit_mqtt_util:mqtt2amqp(
                                                        TopicName)},
                            #'queue.bind_ok'{} = amqp_channel:call(Channel, Binding),
@@ -214,7 +214,7 @@ process_request(?UNSUBSCRIBE,
                   Queue = element(QosSub + 1, Queues),
                   Binding = #'queue.unbind'{
                               queue       = Queue,
-                              exchange    = Exchange,
+                              exchange    = list_to_binary(TopicName),
                               routing_key =
                                   rabbit_mqtt_util:mqtt2amqp(TopicName)},
                   #'queue.unbind_ok'{} = amqp_channel:call(Channel, Binding)
@@ -550,7 +550,7 @@ amqp_pub(#mqtt_msg{ qos        = Qos,
                                exchange       = Exchange,
                                unacked_pubs   = UnackedPubs,
                                awaiting_seqno = SeqNo }) ->
-    Method = #'basic.publish'{ exchange    = Exchange,
+    Method = #'basic.publish'{ exchange    = list_to_binary(TopicName),
                                routing_key =
                                    rabbit_mqtt_util:mqtt2amqp(Topic)},
     Headers = [{<<"x-mqtt-publish-qos">>, byte, Qos},
